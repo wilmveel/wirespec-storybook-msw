@@ -9,7 +9,7 @@ import {
     RestRequest
 } from "msw";
 
-import {Wirespec} from "../gen/petstore.ts";
+import {Wirespec} from "../gen/petstore.openapi.ts";
 
 type Handler = (request: any) => Promise<Wirespec.Response<any>>
 
