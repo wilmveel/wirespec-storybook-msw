@@ -2,7 +2,8 @@ import type {Meta, StoryObj} from '@storybook/react';
 
 import {Button} from './Button';
 import {wirespecHandler} from "../wirespec.ts";
-import {AddPet, GetPetById} from "../../gen/petstore.ts";
+import {AddPet, GetPetById, GetOrderById, Order} from "../../gen/petstore.openapi.ts";
+import {db} from"../../gen/petstore.db.ts";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta = {
@@ -23,8 +24,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const store = {
+    pets:[
+        {name: `Doggy`, photoUrls: []}
+    ]
+}
+
 const handleClick = () => {
-    fetch('/pet')
+    fetch('/store/order/123')
         .then(res => res.json())
         .then(json => alert(JSON.stringify(json)))
 }
@@ -36,25 +43,23 @@ export const Primary: Story = {
         label: 'Button',
         onClick: handleClick
     },
+    parameters: {
+        msw: {
+            handlers: [
+                wirespecHandler<GetPetById.Handler>(
+                    GetPetById.METHOD,
+                    GetPetById.PATH,
+                    async () => AddPet.response200ApplicationJson({body: store.pets[0]})
+                ),
+                wirespecHandler<GetOrderById.Handler>(
+                    GetOrderById.METHOD,
+                    GetOrderById.PATH,
+                    async () => GetOrderById.response200ApplicationJson({body: db.Order.create()})
+                )
+            ]
+        }
+    }
 };
-
-const store = {
-    pets:[
-        {name: `Doggy`, photoUrls: []}
-    ]
-}
-
-Primary.parameters = {
-    msw: {
-        handlers: [
-            wirespecHandler<GetPetById.Request, GetPetById.Response>(
-                GetPetById.METHOD,
-                GetPetById.PATH,
-                () => AddPet.response200ApplicationJson({body: store.pets[0]})
-            )
-        ]
-    },
-}
 
 export const Secondary: Story = {
     args: {

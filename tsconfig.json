@@ -18,10 +18,16 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "allowJs": true,
+    "esModuleInterop": false
   },
   "include": [
     "src"
   ],
-  "references": [{ "path": "./tsconfig.node.json"}]
+  "references": [{ "path": "./tsconfig.node.json"}],
+  "ts-node": {
+    // Tell ts-node CLI to install the --loader automatically
+    "esm": true
+  }
 }

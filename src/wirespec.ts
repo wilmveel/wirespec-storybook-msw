@@ -1,26 +1,41 @@
 import {
     DefaultBodyType,
     MockedRequest,
+    PathParams,
+    ResponseResolver,
     rest,
+    RestContext,
     RestHandler,
+    RestRequest
 } from "msw";
 
 import {Wirespec} from "../gen/petstore.ts";
 
-export const wirespecHandler = <Req extends Wirespec.Request<object>, Res extends Wirespec.Response<object>> (method:Wirespec.Method, path:string, call: (req: Req) => Res): RestHandler<MockedRequest<DefaultBodyType>> => {
-    console.log(`[${method}] ${path}`)
+type Handler = (request: any) => Promise<Wirespec.Response<any>>
 
-    return rest.get("/pet", (req, res, ctx) => {
+export const wirespecHandler = <Call extends Handler>(method: string, path: string, call: Call): RestHandler<MockedRequest<DefaultBodyType>> => {
 
-        // @ts-ignore
-        const x = call({
+    const handler: ResponseResolver<RestRequest<DefaultBodyType, PathParams>, RestContext, DefaultBodyType> = async (req, res, ctx) => {
+        const data = await call({
             content: undefined,
             method: req.method.toUpperCase() as Wirespec.Method,
             path: req.url.toString()
         })
-
         return res(
-            ctx.json(x.content?.body)
+            ctx.json(data.content?.body)
         )
-    })
+    }
+
+    switch (method) {
+        case "GET":
+            return rest.get(path, handler);
+        case "POST":
+            return rest.post(path, handler);
+        case "PUT":
+            return rest.put(path, handler);
+        case "DELETE":
+            return rest.delete(path, handler);
+    }
+    
+    throw new Error(`Cannot match requst ${method}`)
 }
