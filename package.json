@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "postinstall": "node init.js"
+    "postinstall": "node init.js",
+    "wirespec": "wirespec openapi/petstore.json -o tmp -a v3 -l TypeScript"
   },
   "dependencies": {
     "@faker-js/faker": "^8.3.1",
