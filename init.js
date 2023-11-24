@@ -1,7 +1,7 @@
 import fs from "fs";
 import wirespec from "@flock/wirespec";
 
-const openapi = String(fs.readFileSync("openapi/petstore.json"));
+const openapi = String(fs.readFileSync("spec/petstore.json"));
 const file = wirespec.OpenApiV3ToTypescript.compile(openapi)
 const ast = wirespec.OpenApiV3Parser.parse(openapi)
 
